@@ -1,13 +1,26 @@
 package main
 
 import (
+	"bufio"
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
+	"strings"
 
 	"github.com/dixonwille/wmenu/v5"
 	_ "modernc.org/sqlite"
 )
+
+// interface to hold responses from the database
+type dbResponse struct {
+	id       int
+	name     string
+	year     string
+	rank     float64
+	movie_id int
+	genre    string
+}
 
 // create a check error function to use whereever I need it
 func checkError(err error) {
@@ -17,13 +30,58 @@ func checkError(err error) {
 	}
 }
 
+// prompts the user for information
+func infoRequest(info string) string {
+
+	reader := bufio.NewReader(os.Stdin)
+
+	promptString := fmt.Sprintf("Please enter %v", info)
+	fmt.Println(promptString)
+
+	result, _ := reader.ReadString('\n')
+	if result != "\n" {
+		result = strings.TrimSuffix(result, "\n")
+	}
+
+	return result
+
+}
+
+// send a string as a query to the sqlite movie database
+func userRequest(database *sql.DB, userIn string) (err error) {
+
+	// send request
+	rows, err := database.Query(userIn)
+	checkError(err)
+	defer rows.Close()
+
+	// process the returns
+	for rows.Next() {
+		r := &dbResponse{}
+		err := rows.Scan(&r.id, &r.name, &r.year, &r.rank, &r.movie_id, &r.genre)
+		checkError(err)
+		fmt.Println(*r)
+	}
+
+	return err
+}
+
 // different options for interacting with the sqlite database
 func userAct(database *sql.DB, opts []wmenu.Opt) {
 
 	switch opts[0].Value {
 
 	case 0:
+		// send a SQLite query to the database
 		fmt.Println("Send a SQLite query to the database.")
+		// get the input from the user
+		input := infoRequest("SQL query")
+
+		// send the query to the database
+		sentQ := userRequest(database, input)
+		checkError(sentQ)
+
+		break
 	case 1:
 		fmt.Println("Add data to the database.")
 	case 2:
