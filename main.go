@@ -39,7 +39,7 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 
 func main() {
 
-	database, err := sql.Open("sqlite3", "./movieDB.db")
+	database, err := sql.Open("sqlite", "./movieDB.db")
 	checkError(err)
 	// defer close
 	defer database.Close()
@@ -52,6 +52,7 @@ func main() {
 	menu.Option("Add data to the database", 1, false, nil)
 	menu.Option("Update existing records in the databse", 2, false, nil)
 	menu.Option("Run a demonstration of CRUD operations.", 3, false, nil)
+	menu.Option("Quit the applicaton", 4, false, nil)
 
 	runErr := menu.Run()
 
