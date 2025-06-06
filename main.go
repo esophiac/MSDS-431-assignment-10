@@ -97,7 +97,7 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 
 func main() {
 
-	database, err := sql.Open("sqlite", "./movieDB.db")
+	database, err := sql.Open("sqlite", "movieDB.db")
 	checkError(err)
 	// defer close
 	defer database.Close()
