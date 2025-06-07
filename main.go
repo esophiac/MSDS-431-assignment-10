@@ -145,7 +145,39 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 		break
 
 	case 4:
-		fmt.Println("Run a demonstration of CRUD operations.")
+
+		// demonstrating the CRUD actions with the database
+
+		fmt.Println("Creating a demonstration row.")
+		sql1 := `INSERT INTO movies (name, year, rank) VALUES("Demo Movie Title", 2000 , 10)`
+		change1 := updateDelete(database, sql1)
+		rsp1 := fmt.Sprintf("Changed %v rows.", change1)
+		fmt.Println(rsp1)
+
+		fmt.Println("Printing the created row.")
+		sq2 := `SELECT * FROM movies WHERE name="Demo Movie Title"`
+		sentQ := userRequest(database, sq2)
+		checkError(sentQ)
+
+		fmt.Println("Update the row with a new year.")
+		sql3 := `UPDATE movies SET year = 2001 WHERE name = "Demo Movie Title"`
+		change3 := updateDelete(database, sql3)
+		rsp3 := fmt.Sprintf("Changed %v rows.", change3)
+		fmt.Println(rsp3)
+
+		fmt.Println("Printing the updated row.")
+		sq4 := `SELECT * FROM movies WHERE name="Demo Movie Title"`
+		sentQ2 := userRequest(database, sq4)
+		checkError(sentQ2)
+
+		fmt.Println("Deleting the demonstration row.")
+		sql5 := `DELETE FROM movies WHERE name = "Demo Movie Title"`
+		change5 := updateDelete(database, sql5)
+		rsp5 := fmt.Sprintf("Changed %v rows.", change5)
+		fmt.Println(rsp5)
+
+		break
+
 	case 5:
 		// quit the application
 		fmt.Println("Application closing")
