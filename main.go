@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"reflect"
 	"strings"
 
 	"github.com/dixonwille/wmenu/v5"
@@ -13,12 +15,12 @@ import (
 )
 
 // interface to hold responses from the database
-type dbResponse struct {
-	id       int
+type DBresponse struct {
+	id       int64
 	name     string
 	year     string
-	rank     float64
-	movie_id int
+	rank     any
+	movie_id any
 	genre    string
 }
 
@@ -55,15 +57,37 @@ func userRequest(database *sql.DB, userIn string) (err error) {
 	checkError(err)
 	defer rows.Close()
 
-	// process the returns
-	for rows.Next() {
-		r := &dbResponse{}
-		err := rows.Scan(&r.id, &r.name, &r.year, &r.rank, &r.movie_id, &r.genre)
-		checkError(err)
-		fmt.Println(*r)
+	columns, err := rows.Columns()
+	checkError(err)
+	colNum := len(columns)
+
+	var values = make([]interface{}, colNum)
+	for i, _ := range values {
+		var ii interface{}
+		values[i] = &ii
 	}
 
+	for rows.Next() {
+		err := rows.Scan(values...)
+		fmt.Println(err)
+		for i, colName := range columns {
+			var raw_value = *(values[i].(*interface{}))
+			var raw_type = reflect.TypeOf(raw_value)
+
+			fmt.Println(colName, raw_type, raw_value)
+		}
+	}
 	return err
+}
+
+// accept and run a user SQL statement to update a row in the database or delete a row
+func updateDelete(database *sql.DB, userUpdate string) int64 {
+	result, err := database.Exec(userUpdate)
+	checkError(err)
+
+	rowNum, _ := result.RowsAffected()
+
+	return rowNum
 }
 
 // different options for interacting with the sqlite database
@@ -82,8 +106,20 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 		checkError(sentQ)
 
 		break
+
 	case 1:
 		fmt.Println("Add data to the database.")
+		// update rows in the database
+
+		// get query from user
+		sqlQuery := infoRequest("SQLite table update")
+
+		rowsChanged := updateDelete(database, sqlQuery)
+		upResp := fmt.Sprintf("Changed %v rows.", rowsChanged)
+		fmt.Println(upResp)
+
+		break
+
 	case 2:
 		fmt.Println("Update existing records in the database.")
 	case 3:
@@ -97,7 +133,7 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 
 func main() {
 
-	database, err := sql.Open("sqlite", "movieDB.db")
+	database, err := sql.Open("sqlite", "movieDB")
 	checkError(err)
 	// defer close
 	defer database.Close()
