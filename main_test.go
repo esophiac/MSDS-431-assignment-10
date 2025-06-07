@@ -32,3 +32,24 @@ func TestUserRequest(t *testing.T) {
 		t.Errorf("Expected nil, got %v", out)
 	}
 }
+
+// test the updateDelete function
+func TestUpdateDelete(t *testing.T) {
+
+	database, _ := sql.Open("sqlite", "movieDB")
+	defer database.Close()
+
+	in := "INSERT INTO movies (year, rank) VALUES(20000 , 10)"
+
+	out := updateDelete(database, in)
+
+	expected := int64(1)
+
+	if out != expected {
+		t.Errorf("Expected nil, got %v", out)
+	}
+
+	//delete the test data from the database
+	in2 := "DELETE FROM movies WHERE year = 20000"
+	updateDelete(database, in2)
+}

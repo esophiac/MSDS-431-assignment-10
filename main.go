@@ -77,6 +77,7 @@ func userRequest(database *sql.DB, userIn string) (err error) {
 			fmt.Println(colName, raw_type, raw_value)
 		}
 	}
+
 	return err
 }
 
@@ -111,7 +112,7 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 		// add rows to the database
 
 		// get query from user
-		sqlQuery := infoRequest("SQLite table update")
+		sqlQuery := infoRequest("SQLite table addition")
 
 		rowsChanged := updateDelete(database, sqlQuery)
 		upResp := fmt.Sprintf("Changed %v rows.", rowsChanged)
