@@ -108,7 +108,7 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 		break
 
 	case 1:
-		// update rows in the database
+		// add rows to the database
 
 		// get query from user
 		sqlQuery := infoRequest("SQLite table update")
@@ -132,11 +132,23 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 		break
 
 	case 3:
-		fmt.Println("Delete records in the database.")
+		// delete records from the database
+
+		// get query from user
+		sqlQuery := infoRequest("SQLite deletion query")
+
+		rowsChanged := updateDelete(database, sqlQuery)
+		upResp := fmt.Sprintf("Deleted %v rows.", rowsChanged)
+		fmt.Println(upResp)
+
+		break
+
 	case 4:
 		fmt.Println("Run a demonstration of CRUD operations.")
 	case 5:
-		fmt.Println("Quit the application.")
+		// quit the application
+		fmt.Println("Application closing")
+		os.Exit(3)
 	}
 }
 
@@ -154,8 +166,9 @@ func main() {
 	menu.Option("Send SQLite query to the database", 0, true, nil)
 	menu.Option("Add data to the database", 1, false, nil)
 	menu.Option("Update existing records in the databse", 2, false, nil)
-	menu.Option("Run a demonstration of CRUD operations.", 3, false, nil)
-	menu.Option("Quit the applicaton", 4, false, nil)
+	menu.Option("Delete records from the database", 3, false, nil)
+	menu.Option("Run a demonstration of CRUD operations.", 4, false, nil)
+	menu.Option("Quit the applicaton", 5, false, nil)
 
 	runErr := menu.Run()
 
