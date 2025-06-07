@@ -120,7 +120,16 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 		break
 
 	case 2:
-		fmt.Println("Update existing records in the database.")
+		// update rows in the database
+
+		// get query from user
+		sqlQuery := infoRequest("SQLite table update")
+
+		rowsChanged := updateDelete(database, sqlQuery)
+		upResp := fmt.Sprintf("Changed %v rows.", rowsChanged)
+		fmt.Println(upResp)
+
+		break
 
 	case 3:
 		fmt.Println("Delete records in the database.")
