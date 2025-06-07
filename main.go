@@ -108,7 +108,6 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 		break
 
 	case 1:
-		fmt.Println("Add data to the database.")
 		// update rows in the database
 
 		// get query from user
@@ -122,6 +121,7 @@ func userAct(database *sql.DB, opts []wmenu.Opt) {
 
 	case 2:
 		fmt.Println("Update existing records in the database.")
+
 	case 3:
 		fmt.Println("Delete records in the database.")
 	case 4:
